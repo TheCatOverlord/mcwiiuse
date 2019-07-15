@@ -1,5 +1,12 @@
 # Minecraft Wiiuse
 A C program that uses keyboard simulation and wiimote events to bring minecraft and wii remotes together.
+This is still a work in progress.
+```
+TODO
+Smooth the nunchuk controls out
+map the rest of the keys (inventory and such)
+fix the lag issue
+```
 
 # Needed Libraries
 libxdo
