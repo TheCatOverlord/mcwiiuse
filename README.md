@@ -4,8 +4,8 @@ This is still a work in progress.
 ```
 TODO
 Smooth the nunchuk controls out
-map the rest of the keys (inventory and such)
 fix the lag issue
+Convert the terminal output into a more cli interface
 ```
 
 # Needed Libraries
@@ -32,4 +32,20 @@ to compile the code.
 You can run the program with
 ```
 ./minecraftwiiuse
+```
+
+# Button layout
+Currently everything is mapped as follows
+```
+Arrow keys -> 'wasd'
+A          -> left mouse click
+B          -> right mouse click
+Home       -> e
+1          -> mouse scroll up
+2          -> mouse scroll down
++          -> Increase the joystick sensivity
+-          -> Decrease the joystick sensivity
+z          -> space
+c          -> shift
+joystick   -> Mouse movement
 ```
