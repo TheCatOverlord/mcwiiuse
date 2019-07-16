@@ -5,6 +5,16 @@
 
 #define MAX_WIIMOTES 1
 
+int mousesensivity = 15;
+
+/* wasd is mapped to the arrow pad
+   A left mouse click
+   B right mouse click
+   minus is e
+   1 and 2 is scroll up and down
+   z is space
+   c is shift*/
+
 //handler for general events
 void handle_event(struct wiimote_t* wm, const xdo_t * xdoSession)
 {
@@ -14,14 +24,17 @@ void handle_event(struct wiimote_t* wm, const xdo_t * xdoSession)
     if (IS_PRESSED(wm, WIIMOTE_BUTTON_A)) //if button A is pressed
     {
         printf("A button is pressed.\n");
+        xdo_mouse_down(xdoSession,CURRENTWINDOW,1);
     }
     if (IS_PRESSED(wm, WIIMOTE_BUTTON_B)) //if button B is press
     {
         printf("B button is pressed.\n");
+        xdo_mouse_down(xdoSession,CURRENTWINDOW,3);
     }
     if (IS_PRESSED(wm,WIIMOTE_BUTTON_HOME)) //if the home button is pressed
     {
         printf("Home button is pressed.\n");
+        xdo_send_keysequence_window_down(xdoSession,CURRENTWINDOW,"e",1000);
     }
     if (IS_PRESSED(wm,WIIMOTE_BUTTON_UP)) //if the up button is pressed
     {
@@ -46,32 +59,39 @@ void handle_event(struct wiimote_t* wm, const xdo_t * xdoSession)
     if (IS_PRESSED(wm,WIIMOTE_BUTTON_MINUS)) //if minus button is pushed
     {
         printf("Minus button is pressed.\n");
+        mousesensivity--;
     }
     if (IS_PRESSED(wm, WIIMOTE_BUTTON_PLUS)) //if the plus button is pushed
     {
         printf("Plus button is pressed.\n");
+        mousesensivity++;
     }
     if (IS_PRESSED(wm, WIIMOTE_BUTTON_ONE)) //if the one button is pushed
     {
         printf("One button is pressed.\n");
+        xdo_mouse_down(xdoSession,CURRENTWINDOW,4);
     }
     if (IS_PRESSED(wm, WIIMOTE_BUTTON_TWO)) //if the two button is pushed
     {
         printf("Two button is pressed.\n");
+        xdo_mouse_down(xdoSession,CURRENTWINDOW,5);
     }
 
     //handle releasing buttons
     if (IS_RELEASED(wm, WIIMOTE_BUTTON_A)) //if the A button is released
     {
         printf("A button is released.\n");
+        xdo_mouse_up(xdoSession,CURRENTWINDOW,1);
     }
     if (IS_RELEASED(wm, WIIMOTE_BUTTON_B)) //if the B button is released
     {
         printf("B button is released.\n");
+        xdo_mouse_up(xdoSession,CURRENTWINDOW,3);
     }
     if (IS_RELEASED(wm,WIIMOTE_BUTTON_HOME)) //if the home button is released
     {
         printf("Home button is released.\n");
+        xdo_send_keysequence_window_up(xdoSession,CURRENTWINDOW,"e",1000);
     }
     if (IS_RELEASED(wm,WIIMOTE_BUTTON_UP)) //if the up button is released
     {
@@ -96,6 +116,7 @@ void handle_event(struct wiimote_t* wm, const xdo_t * xdoSession)
     if (IS_RELEASED(wm,WIIMOTE_BUTTON_MINUS)) //if the minus button is released
     {
         printf("Minus button is released.\n");
+        
     }
     if (IS_RELEASED(wm, WIIMOTE_BUTTON_PLUS)) //if the plus button is released
     {
@@ -104,10 +125,12 @@ void handle_event(struct wiimote_t* wm, const xdo_t * xdoSession)
     if (IS_RELEASED(wm, WIIMOTE_BUTTON_ONE)) //if the one button is released
     {
         printf("One button is released.\n");
+        xdo_mouse_up(xdoSession,CURRENTWINDOW,4);
     }
     if (IS_RELEASED(wm, WIIMOTE_BUTTON_TWO)) //if the two button is released
     {
         printf("Two button is released.\n");
+        xdo_mouse_up(xdoSession,CURRENTWINDOW,5);
     }
 
 
@@ -119,46 +142,72 @@ void handle_event(struct wiimote_t* wm, const xdo_t * xdoSession)
 
 		if (IS_PRESSED(nc, NUNCHUK_BUTTON_C)) { //if the c button is pressed
 			printf("Nunchuk: C pressed\n");
-            xdo_send_keysequence_window_down(xdoSession,CURRENTWINDOW," ",1000); //press the space key (not working atm)
+            xdo_send_keysequence_window_down(xdoSession,CURRENTWINDOW,"shift",1000); //press the shift key
 		}
 		if (IS_PRESSED(nc, NUNCHUK_BUTTON_Z)) { //if the z button is pressed
  			printf("Nunchuk: Z pressed\n");
+            xdo_send_keysequence_window_down(xdoSession,CURRENTWINDOW,"space",1000); //press the space key
 		}
         if (IS_RELEASED(nc, NUNCHUK_BUTTON_C)) //if the c button is released
         {
-            xdo_send_keysequence_window_up(xdoSession,CURRENTWINDOW," ",1000); //release the space key (not working atm)
+            xdo_send_keysequence_window_up(xdoSession,CURRENTWINDOW,"shift",1000); //release the shift key
+        }
+        if (IS_RELEASED(nc, NUNCHUK_BUTTON_Z))
+        {
+            xdo_send_keysequence_window_up(xdoSession,CURRENTWINDOW,"space",1000); //release the space key
         }
 
         //print stuff about the nunchuk
 		printf("nunchuk joystick angle:     %f\n", nc->js.ang);
 		printf("nunchuk joystick magnitude: %f\n", nc->js.mag);
-		printf("nunchuk joystick calibration (min, center, max): x: %i, %i, %i  y: %i, %i, %i\n",
-		    nc->js.min.x,
-		    nc->js.center.x,
-		    nc->js.max.x,
-		    nc->js.min.y,
-		    nc->js.center.y,
-            nc->js.max.y);
 
         //mouse logic
-        if (nc->js.mag > 0.4) //if the magnitude is greater than .4 (software defined deadzone)
+        if (nc->js.mag > 0.2) //if the magnitude is greater than .2 (software defined deadzone)
         {
-            if (nc->js.ang < 45 || nc->js.ang > 315) //if the angle is less than 45 or greater than 315
+            int distance = (nc->js.mag -.2) * mousesensivity;
+            float angle = nc->js.ang;
+            if (angle > 337.5 || angle < 22.5)
             {
-                xdo_move_mouse_relative(xdoSession, -10, 0); //move the mouse left
+                //left
+                xdo_move_mouse_relative(xdoSession,(distance * -1), 0);
             }
-            if (nc->js.ang < 315 && nc->js.ang > 225) //if the angle is less than 315 and greater than 225
+            if (angle > 292.5 && angle < 337.5)
             {
-                xdo_move_mouse_relative(xdoSession, 0, -10); //move the mouse up
+                //leftup
+                xdo_move_mouse_relative(xdoSession,(distance * -1), (distance * -1));
+
             }
-            if (nc->js.ang < 225 && nc->js.ang > 135) //if the angle is less than 225 and greater than 135
+            if (angle > 247.5 && angle < 337.5)
             {
-                xdo_move_mouse_relative(xdoSession, 10, 0); //move the mouse right
+                //up
+                xdo_move_mouse_relative(xdoSession,0, (distance * -1));
             }
-            if (nc->js.ang < 135 && nc->js.ang > 45) //if the angle is less than 135 and greater than 45
+            if (angle > 202.5 && angle < 247.5)
             {
-                xdo_move_mouse_relative(xdoSession, 0, 10); //move the mouse down
+                //right up
+                xdo_move_mouse_relative(xdoSession,distance, (distance * -1));
             }
+            if (angle > 157.5 && angle < 202.5)
+            {
+                //right
+                xdo_move_mouse_relative(xdoSession,distance, 0);
+            }
+            if (angle > 112.5 && angle < 157.5)
+            {
+                //rightdown
+                xdo_move_mouse_relative(xdoSession,distance, distance);
+            }
+            if (angle > 67.5 && angle < 112.5)
+            {
+                //down
+                xdo_move_mouse_relative(xdoSession,0, distance);
+            }
+            if (angle > 22.5 && angle < 67.5)
+            {
+                //leftdown
+                xdo_move_mouse_relative(xdoSession,(distance * -1), distance);
+            }
+ 
         }
     }
 }
@@ -213,7 +262,7 @@ int main()
     found = wiiuse_find(wiimotes,MAX_WIIMOTES,5);
     if (!found)
     {
-        printf("No wiimotes found\n");
+        printf("[Error] No wiimotes found\n");
         return 0;
     }
 
@@ -221,11 +270,11 @@ int main()
     connected = wiiuse_connect(wiimotes, MAX_WIIMOTES);
     if (connected)
     {
-        printf("Connected to %i wiimotes (of %i found). kek \n",connected,found);
+        printf("[Info] Connected to %i wiimotes (of %i found).\n",connected,found);
     }
     else 
     {
-        printf("Failed to connect to any wiimote.\n");
+        printf("[Error] Failed to connect to any wiimote.\n");
         return 0;
     }
     
