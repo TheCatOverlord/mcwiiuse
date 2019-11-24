@@ -164,50 +164,54 @@ void handle_event(struct wiimote_t* wm, const xdo_t * xdoSession)
         //mouse logic
         if (nc->js.mag > 0.2) //if the magnitude is greater than .2 (software defined deadzone)
         {
-            int distance = (nc->js.mag -.2) * mousesensivity;
-            float angle = nc->js.ang;
-            if (angle > 337.5 || angle < 22.5)
-            {
-                //left
-                xdo_move_mouse_relative(xdoSession,(distance * -1), 0);
-            }
-            if (angle > 292.5 && angle < 337.5)
-            {
-                //leftup
-                xdo_move_mouse_relative(xdoSession,(distance * -1), (distance * -1));
+            int moveX = nc->js.x * 10;
+            int moveY = nc->js.y * -10;
 
-            }
-            if (angle > 247.5 && angle < 337.5)
-            {
-                //up
-                xdo_move_mouse_relative(xdoSession,0, (distance * -1));
-            }
-            if (angle > 202.5 && angle < 247.5)
-            {
-                //right up
-                xdo_move_mouse_relative(xdoSession,distance, (distance * -1));
-            }
-            if (angle > 157.5 && angle < 202.5)
-            {
-                //right
-                xdo_move_mouse_relative(xdoSession,distance, 0);
-            }
-            if (angle > 112.5 && angle < 157.5)
-            {
-                //rightdown
-                xdo_move_mouse_relative(xdoSession,distance, distance);
-            }
-            if (angle > 67.5 && angle < 112.5)
-            {
-                //down
-                xdo_move_mouse_relative(xdoSession,0, distance);
-            }
-            if (angle > 22.5 && angle < 67.5)
-            {
-                //leftdown
-                xdo_move_mouse_relative(xdoSession,(distance * -1), distance);
-            }
- 
+            xdo_move_mouse_relative(xdoSession, moveX, moveY);
+
+            //int distance = (nc->js.mag -.2) * mousesensivity;
+            //float angle = nc->js.ang;
+            // if (angle > 337.5 || angle < 22.5)
+            // {
+            //     //left
+            //     xdo_move_mouse_relative(xdoSession,(distance * -1), 0);
+            // }
+            // if (angle > 292.5 && angle < 337.5)
+            // {
+            //     //leftup
+            //     xdo_move_mouse_relative(xdoSession,(distance * -1), (distance * -1));
+
+            // }
+            // if (angle > 247.5 && angle < 337.5)
+            // {
+            //     //up
+            //     xdo_move_mouse_relative(xdoSession,0, (distance * -1));
+            // }
+            // if (angle > 202.5 && angle < 247.5)
+            // {
+            //     //right up
+            //     xdo_move_mouse_relative(xdoSession,distance, (distance * -1));
+            // }
+            // if (angle > 157.5 && angle < 202.5)
+            // {
+            //     //right
+            //     xdo_move_mouse_relative(xdoSession,distance, 0);
+            // }
+            // if (angle > 112.5 && angle < 157.5)
+            // {
+            //     //rightdown
+            //     xdo_move_mouse_relative(xdoSession,distance, distance);
+            // }
+            // if (angle > 67.5 && angle < 112.5)
+            // {
+            //     //down
+            //     xdo_move_mouse_relative(xdoSession,0, distance);
+            // }
+            // if (angle > 22.5 && angle < 67.5)
+            // {
+            //     //leftdown
+            //     xdo_move_mouse_relative(xdoSession,(distance * -1), distance);
+            // }
         }
     }
 }
